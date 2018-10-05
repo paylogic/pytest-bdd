@@ -157,7 +157,7 @@ default author.
 
     Scenario: I'm the admin
         Given I'm the admin
-        And there is an article
+        And there's an article
 
 
 Given step scope
@@ -392,7 +392,7 @@ But in much cleaner and powerful way:
         Then the text should be parsed with correct indentation
 
 Step is considered as multiline one, if the **next** line(s) after it's first line, is indented relatively
-to the first line. The step name is then simply extended by adding futher lines with newlines.
+to the first line. The step name is then simply extended by adding further lines with newlines.
 In the example above, the Given step name will be:
 
 .. code-block:: python
@@ -723,7 +723,7 @@ completely different:
 
 For picking up tests to run we can use
 `tests selection <http://pytest.org/latest/usage.html#specifying-tests-selecting-tests>`_ technique. The problem is that
-you have to know how your tests are organized, knowing ony the feature files organization is not enough.
+you have to know how your tests are organized, knowing only the feature files organization is not enough.
 `cucumber tags <https://github.com/cucumber/cucumber/wiki/Tags>`_ introduce standard way of categorizing your features
 and scenarios, which pytest-bdd supports. For example, we could have:
 
@@ -1080,7 +1080,7 @@ test_publish_article.py:
         return False
 
 
-    @scenario('publish_article.feature', 'Publishing the article in a wierd way')
+    @scenario('publish_article.feature', 'Publishing the article in a weird way')
     def test_publish():
         pass
 
@@ -1148,6 +1148,14 @@ To enable gherkin-formatted output on terminal, use
 ::
 
     py.test --gherkin-terminal-reporter
+
+
+Terminal reporter supports expanded format as well
+
+::
+
+    py.test --gherkin-terminal-reporter-expanded
+
 
 
 Test code generation helpers
