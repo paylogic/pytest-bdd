@@ -284,7 +284,7 @@ def _get_scenario_decorator(feature, feature_name, scenario, scenario_name, call
 
 
 def scenario(feature_name, scenario_name, encoding="utf-8", example_converters=None,
-             caller_module=None, caller_function=None):
+             caller_module=None, caller_function=None, strict_gherkin=False, base_path=None):
     """Scenario decorator.
 
     :param str feature_name: Feature file name. Absolute or relative to the configured feature base path.
@@ -298,8 +298,11 @@ def scenario(feature_name, scenario_name, encoding="utf-8", example_converters=N
     caller_function = caller_function or get_caller_function()
 
     # Get the feature
-    base_path = get_fixture(caller_module, "pytestbdd_feature_base_dir")
-    strict_gherkin = get_fixture(caller_module, "pytestbdd_strict_gherkin")
+    # base_path = get_fixture(caller_module, "pytestbdd_feature_base_dir")
+    if base_path is None:
+        base_path = os.getenv('PYTEST_BDD_BASE_PATH', None)
+    if base_path is None:
+        raise ValueError('You must specify a base_path to discover feature files')
     feature = Feature.get_feature(base_path, feature_name, encoding=encoding, strict_gherkin=strict_gherkin)
 
     # Get the sc_enario
@@ -357,8 +360,13 @@ def scenarios(*feature_paths, **kwargs):
     """
     frame = inspect.stack()[1]
     module = inspect.getmodule(frame[0])
-    base_path = get_fixture(module, "pytestbdd_feature_base_dir")
-    strict_gherkin = get_fixture(module, "pytestbdd_strict_gherkin")
+
+    base_path = kwargs.get('base_path')
+    if base_path is None:
+        base_path = os.getenv('PYTEST_BDD_BASE_PATH', None)
+    if base_path is None:
+        raise ValueError('You must specify a base_path to discover feature files')
+
     abs_feature_paths = []
     for path in feature_paths:
         if not os.path.isabs(path):
@@ -371,7 +379,7 @@ def scenarios(*feature_paths, **kwargs):
         for name, attr in module.__dict__.items() if hasattr(attr, '__scenario__'))
 
     index = 10
-    for feature in get_features(abs_feature_paths, strict_gherkin=strict_gherkin):
+    for feature in get_features(abs_feature_paths, strict_gherkin=kwargs.get('strict_gherkin')):
         for scenario_name, scenario_object in feature.scenarios.items():
             # skip already bound scenarios
             if (scenario_object.feature.filename, scenario_name) not in module_scenarios:
